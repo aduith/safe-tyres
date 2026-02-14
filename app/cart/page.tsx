@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
@@ -55,11 +56,13 @@ export default function CartPage() {
                 >
                   <CardContent className="p-6">
                     <div className="flex gap-6">
-                      <div className="w-32 h-32 bg-background rounded-lg overflow-hidden flex-shrink-0">
-                        <img
+                      <div className="w-32 h-32 bg-background rounded-lg overflow-hidden flex-shrink-0 relative">
+                        <Image
                           src={item.image}
                           alt={item.name}
-                          className="w-full h-full object-contain"
+                          fill
+                          className="object-contain"
+                          sizes="128px"
                         />
                       </div>
 
@@ -94,7 +97,7 @@ export default function CartPage() {
 
                           <div className="flex items-center gap-4">
                             <span className="text-2xl font-bold text-primary">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              ₹{(item.price * item.quantity).toFixed(2)}
                             </span>
                             <Button
                               variant="ghost"
@@ -122,7 +125,7 @@ export default function CartPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Items ({totalItems})</span>
-                      <span>${totalPrice.toFixed(2)}</span>
+                      <span>₹{totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>Shipping</span>
@@ -131,7 +134,7 @@ export default function CartPage() {
                     <div className="h-px bg-border" />
                     <div className="flex justify-between text-xl font-bold">
                       <span>Total</span>
-                      <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                      <span className="text-primary">₹{totalPrice.toFixed(2)}</span>
                     </div>
                   </div>
 

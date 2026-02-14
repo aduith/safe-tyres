@@ -32,7 +32,7 @@ const AdminNavbar = () => {
                     {/* Logo */}
                     <Link href="/admin" className="flex items-center gap-3 group">
                         <Image
-                            src="/assets/logo.png"
+                            src="/assets/logo3.png"
                             alt="SafeTyres Admin"
                             width={40}
                             height={40}

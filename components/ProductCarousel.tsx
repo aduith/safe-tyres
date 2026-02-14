@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import {
   Carousel,
   CarouselContent,
@@ -10,8 +11,8 @@ import {
 
 const ProductCarousel = () => {
   const images = [
-    { src: "/assets/img1.jpeg", alt: 'SafeTyres 200ml/300ml Bottle' },
-    { src: "/assets/img2.jpeg", alt: 'SafeTyres 500ml/1L Bottle' },
+    { src: "/assets/imageCarousel.png", alt: 'SafeTyres 200ml/300ml Bottle' },
+    { src: "/assets/imageCarousel.png", alt: 'SafeTyres 500ml/1L Bottle' },
     { src: "/assets/product-angles.jpg", alt: 'Product in Action' },
   ];
 
@@ -33,10 +34,13 @@ const ProductCarousel = () => {
               {images.map((image, index) => (
                 <CarouselItem key={index}>
                   <div className="relative aspect-video rounded-2xl overflow-hidden group">
-                    <img
+                    <Image
                       src={image.src}
                       alt={image.alt}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px" // Provide sizes for optimization
+                      priority={index === 0} // Load the first image eagerly for better LCP
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>

@@ -1,4 +1,4 @@
-// File: /Users/kvtrishagautam/Desktop/safeTyres/app/admin/reviews/page.tsx
+// File: /Users/aduiths/Downloads/SafeTyres/SafeTyres/app/admin/reviews/page.tsx
 import * as entry from '../../../../../app/admin/reviews/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

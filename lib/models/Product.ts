@@ -27,7 +27,7 @@ const productSchema = new Schema<IProduct>(
         size: {
             type: String,
             required: [true, 'Product size is required'],
-            enum: ['200ml', '300ml', '500ml', '1L'],
+            trim: true,
         },
         price: {
             type: Number,

@@ -1,4 +1,4 @@
-// File: /Users/kvtrishagautam/Desktop/safeTyres/app/api/products/route.ts
+// File: /Users/aduiths/Downloads/SafeTyres/SafeTyres/app/api/products/route.ts
 import * as entry from '../../../../../app/api/products/route.js'
 import type { NextRequest } from 'next/server.js'
 

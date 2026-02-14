@@ -34,15 +34,16 @@ const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>MAIL ID (to be added)</span>
+                <span>info@safetyre.com</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 text-primary" />
-                <span>PHONE (to be added)</span>
+                <span>+91 9995067877</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span>ADDRESS (to be added)</span>
+                <span>Market Road, Sreekariyam Junction, <br />
+                  Thiruvananthapuram, Kerala - 695017</span>
               </div>
             </div>
           </div>

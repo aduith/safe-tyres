@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -48,10 +49,12 @@ const ProductCard = ({ id, name, size, price, image, popular }: ProductCardProps
 
       <CardContent className="p-6">
         <div className="aspect-square relative mb-6 rounded-xl overflow-hidden bg-background">
-          <img
+          <Image
             src={image}
             alt={`${name} - ${size}`}
-            className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+            fill
+            className="object-contain transition-transform duration-500 group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Optimize based on grid layout
           />
         </div>
 

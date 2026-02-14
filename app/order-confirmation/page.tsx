@@ -77,7 +77,7 @@ function OrderConfirmationContent() {
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Total Amount</span>
-                                    <span className="font-bold text-primary text-xl">${order.totalAmount.toFixed(2)}</span>
+                                    <span className="font-bold text-primary text-xl">₹{order.totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
 
@@ -96,7 +96,7 @@ function OrderConfirmationContent() {
                                                     {item.size} × {item.quantity}
                                                 </p>
                                             </div>
-                                            <span className="font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
+                                            <span className="font-semibold">₹{(item.price * item.quantity).toFixed(2)}</span>
                                         </div>
                                     ))}
                                 </div>

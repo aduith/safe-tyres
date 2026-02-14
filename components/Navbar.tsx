@@ -33,7 +33,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center gap-3 group">
             <Image
-              src="/assets/logo.png"
+              src="/assets/logo3.png"
               alt="Tyre Anti-Puncture"
               width={48}
               height={48}
@@ -55,6 +55,16 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
+
+            {/* Your Orders Link - Visible when authenticated */}
+            {isAuthenticated && (
+              <Link
+                href="/orders"
+                className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
+              >
+                Your Orders
+              </Link>
+            )}
 
             {/* Cart Button */}
             <Link href="/cart">

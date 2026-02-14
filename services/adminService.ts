@@ -68,12 +68,20 @@ class AdminService {
     }
 
     // Products
-    async createProduct(data: CreateProductData): Promise<Product> {
-        const response = await apiClient.post('/products', data);
+    async createProduct(data: FormData): Promise<Product> {
+        const response = await apiClient.post('/products', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
         return response.data.data.product;
     }
 
     async updateProduct(id: string, data: Partial<CreateProductData>): Promise<Product> {
+        // Note for future: updateProduct API also needs update to handle FormData if image editing is required
+        // For now we keep it JSON based if no image is changed, but ideally should be consistent.
+        // Assuming update uses JSON for now as per previous implementation plan focused on creation.
+        // If image update is needed, the API route [id]/route.ts also needs similar changes.
         const response = await apiClient.put(`/products/${id}`, data);
         return response.data.data.product;
     }
@@ -108,6 +116,10 @@ class AdminService {
         return response.data.data.user;
     }
 
+    async deleteUser(userId: string): Promise<void> {
+        await apiClient.delete(`/users/${userId}`);
+    }
+
     // Reviews
     async getAllReviews(status?: string): Promise<any[]> {
         const params = status ? { status } : {};
@@ -122,6 +134,11 @@ class AdminService {
 
     async deleteReview(reviewId: string): Promise<void> {
         await apiClient.delete(`/reviews/${reviewId}`);
+    }
+
+    // Delete Order
+    async deleteOrder(orderId: string): Promise<void> {
+        await apiClient.delete(`/orders/${orderId}`);
     }
 }
 

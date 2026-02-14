@@ -37,6 +37,9 @@ export async function GET(req: NextRequest) {
     }
 }
 
+import { writeFile } from 'fs/promises';
+import path from 'path';
+
 export async function POST(req: NextRequest) {
     try {
         await connectDB();
@@ -49,8 +52,38 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const body = await req.json();
-        const product = await Product.create(body);
+        const formData = await req.formData();
+        const name = formData.get('name') as string;
+        const size = formData.get('size') as string;
+        const price = parseFloat(formData.get('price') as string);
+        const description = formData.get('description') as string;
+        const stock = parseInt(formData.get('stock') as string);
+        const popular = formData.get('popular') === 'true';
+        const imageFile = formData.get('image') as File;
+
+        if (!imageFile) {
+            return NextResponse.json(
+                { success: false, message: 'Image is required' },
+                { status: 400 }
+            );
+        }
+
+        const buffer = Buffer.from(await imageFile.arrayBuffer());
+        const filename = imageFile.name.replaceAll(' ', '_');
+        const relativePath = `/assets/${filename}`;
+        const absolutePath = path.join(process.cwd(), 'public', 'assets', filename);
+
+        await writeFile(absolutePath, buffer);
+
+        const product = await Product.create({
+            name,
+            size,
+            price,
+            description,
+            stock,
+            popular,
+            image: relativePath,
+        });
 
         return NextResponse.json({
             success: true,
@@ -60,6 +93,7 @@ export async function POST(req: NextRequest) {
             },
         }, { status: 201 });
     } catch (error) {
+        console.error('Error creating product:', error);
         return NextResponse.json(
             { success: false, message: 'Error creating product', error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }

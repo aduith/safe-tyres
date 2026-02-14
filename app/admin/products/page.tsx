@@ -18,6 +18,7 @@ const ProductManagement = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [formData, setFormData] = useState<CreateProductData>({
         name: '',
         size: '',
@@ -48,17 +49,32 @@ const ProductManagement = () => {
         e.preventDefault();
         try {
             if (editingProduct) {
+                // For now, editing only supports JSON updates (no image changes)
                 await adminService.updateProduct(editingProduct._id, formData);
                 toast.success('Product updated successfully');
             } else {
-                await adminService.createProduct(formData);
+                if (!file) {
+                    toast.error('Please select an image');
+                    return;
+                }
+                const data = new FormData();
+                data.append('name', formData.name);
+                data.append('size', formData.size);
+                data.append('price', formData.price.toString());
+                data.append('description', formData.description || '');
+                data.append('stock', formData.stock.toString());
+                data.append('popular', String(formData.popular));
+                data.append('image', file);
+
+                await adminService.createProduct(data);
                 toast.success('Product created successfully');
             }
             setIsDialogOpen(false);
             resetForm();
             fetchProducts();
-        } catch (error) {
-            toast.error('Failed to save product');
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Failed to save product');
         }
     };
 
@@ -135,18 +151,19 @@ const ProductManagement = () => {
                                             />
                                         </div>
                                         <div>
-                                            <Label htmlFor="size">Size</Label>
+                                            <Label htmlFor="size">Size (e.g., 200ml, 1L)</Label>
                                             <Input
                                                 id="size"
                                                 value={formData.size}
                                                 onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                                                 required
+                                                placeholder="e.g. 500ml"
                                             />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <Label htmlFor="price">Price</Label>
+                                            <Label htmlFor="price">Price (₹)</Label>
                                             <Input
                                                 id="price"
                                                 type="number"
@@ -168,22 +185,32 @@ const ProductManagement = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <Label htmlFor="description">Description</Label>
+                                        <Label htmlFor="description">Description (Optional)</Label>
                                         <Input
                                             id="description"
                                             value={formData.description}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            required
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="image">Image URL</Label>
+                                        <Label htmlFor="image">Product Image</Label>
                                         <Input
                                             id="image"
-                                            value={formData.image}
-                                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                            required
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setFile(file);
+                                                }
+                                            }}
+                                            required={!editingProduct} // Required only for new products
                                         />
+                                        {formData.image && (
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                Current image: {formData.image.split('/').pop()}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <input
@@ -216,7 +243,7 @@ const ProductManagement = () => {
                                     <CardContent>
                                         <img src={product.image} alt={product.name} className="w-full h-40 object-contain mb-4" />
                                         <p className="text-sm text-muted-foreground mb-2">{product.size}</p>
-                                        <p className="text-xl font-bold text-primary mb-2">${product.price.toFixed(2)}</p>
+                                        <p className="text-xl font-bold text-primary mb-2">₹{product.price.toFixed(2)}</p>
                                         <p className="text-sm mb-4">Stock: {product.stock}</p>
                                         <div className="flex gap-2">
                                             <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>

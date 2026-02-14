@@ -1,4 +1,4 @@
-// File: /Users/kvtrishagautam/Desktop/safeTyres/app/api/analytics/dashboard/route.ts
+// File: /Users/aduiths/Downloads/SafeTyres/SafeTyres/app/api/analytics/dashboard/route.ts
 import * as entry from '../../../../../../app/api/analytics/dashboard/route.js'
 import type { NextRequest } from 'next/server.js'
 

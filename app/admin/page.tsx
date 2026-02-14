@@ -56,7 +56,7 @@ const AdminDashboard = () => {
                                 <DollarSign className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">${stats?.stats.totalRevenue.toFixed(2)}</div>
+                                <div className="text-2xl font-bold">₹{stats?.stats.totalRevenue.toFixed(2)}</div>
                             </CardContent>
                         </Card>
 
@@ -150,7 +150,7 @@ const AdminDashboard = () => {
                                             <p className="text-sm text-muted-foreground">{order.customerInfo?.email || order.user?.email || 'N/A'}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-bold">${order.totalAmount.toFixed(2)}</p>
+                                            <p className="font-bold">₹{order.totalAmount.toFixed(2)}</p>
                                             <Badge className="mt-1">{order.orderStatus}</Badge>
                                         </div>
                                     </div>

@@ -48,6 +48,7 @@ async function connectDB() {
         cached.conn = await cached.promise;
     } catch (e) {
         cached.promise = null;
+        console.error('❌ MONGODB CONNECTION ERROR:', e);
         throw e;
     }
 

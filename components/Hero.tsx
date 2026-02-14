@@ -3,19 +3,21 @@
 import { Button } from '@/components/ui/button';
 import { Shield, Droplet, Star } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background with overlay */}
-      <div 
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `url(/assets/hero-banner.jpg)`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/assets/hero-banner.jpg"
+          alt="Hero Banner"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
       </div>
 
