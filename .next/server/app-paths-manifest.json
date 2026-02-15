@@ -1,13 +1,1 @@
-{
-  "/api/reviews/approved/route": "app/api/reviews/approved/route.js",
-  "/api/products/route": "app/api/products/route.js",
-  "/api/cart/route": "app/api/cart/route.js",
-  "/api/orders/route": "app/api/orders/route.js",
-  "/api/orders/[id]/route": "app/api/orders/[id]/route.js",
-  "/api/orders/all/route": "app/api/orders/all/route.js",
-  "/api/analytics/dashboard/route": "app/api/analytics/dashboard/route.js",
-  "/orders/page": "app/orders/page.js",
-  "/page": "app/page.js",
-  "/products/page": "app/products/page.js",
-  "/admin/page": "app/admin/page.js"
-}
+{}

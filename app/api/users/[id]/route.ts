@@ -5,9 +5,10 @@ import { isAuthenticated, isAdmin } from '@/lib/auth';
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const user = await isAuthenticated(req);
         if (!user || !isAdmin(user)) {
             return NextResponse.json(
@@ -18,7 +19,7 @@ export async function DELETE(
 
         await connectDB();
 
-        const deletedUser = await User.findByIdAndDelete(params.id);
+        const deletedUser = await User.findByIdAndDelete(id);
 
         if (!deletedUser) {
             return NextResponse.json(
