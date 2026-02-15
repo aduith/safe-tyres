@@ -13,7 +13,7 @@ const ProductCarousel = () => {
   const images = [
     { src: "/assets/imageCarousel.png", alt: 'SafeTyres 200ml/300ml Bottle' },
     { src: "/assets/imageCarousel.png", alt: 'SafeTyres 500ml/1L Bottle' },
-    { src: "/assets/product-angles.jpg", alt: 'Product in Action' },
+    // { src: "/assets/product-angles.jpg", alt: 'Product in Action' },
   ];
 
   return (

@@ -2,10 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Package, Calendar, DollarSign } from 'lucide-react';
+import { Package, Calendar, DollarSign, MapPin, CreditCard, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import orderService, { Order } from '@/services/orderService';
@@ -120,11 +128,95 @@ const Orders = () => {
                                                 </p>
                                             )}
                                         </div>
-                                        <Link href={`/orders/${order._id}`}>
-                                            <Button variant="outline" className="w-full">
-                                                View Details
-                                            </Button>
-                                        </Link>
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" className="w-full">
+                                                    View Details
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                                <DialogHeader>
+                                                    <DialogTitle>Order Details</DialogTitle>
+                                                    <DialogDescription>
+                                                        Order #{order._id.slice(-8).toUpperCase()}
+                                                    </DialogDescription>
+                                                </DialogHeader>
+
+                                                <div className="space-y-6 mt-4">
+                                                    {/* Order Status */}
+                                                    <div className="flex items-center gap-3">
+                                                        <Truck className="h-5 w-5 text-primary" />
+                                                        <div>
+                                                            <p className="text-sm text-muted-foreground">Order Status</p>
+                                                            <Badge className={getStatusColor(order.orderStatus)}>
+                                                                {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Order Date & Total */}
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <Calendar className="h-5 w-5 text-primary" />
+                                                            <div>
+                                                                <p className="text-sm text-muted-foreground">Order Date</p>
+                                                                <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <DollarSign className="h-5 w-5 text-primary" />
+                                                            <div>
+                                                                <p className="text-sm text-muted-foreground">Total Amount</p>
+                                                                <p className="font-medium">₹{order.totalAmount.toFixed(2)}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Shipping Address */}
+                                                    <div className="flex items-start gap-3">
+                                                        <MapPin className="h-5 w-5 text-primary mt-1" />
+                                                        <div>
+                                                            <p className="text-sm text-muted-foreground mb-1">Shipping Address</p>
+                                                            <p className="text-sm">{order.shippingAddress.street}</p>
+                                                            <p className="text-sm">
+                                                                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
+                                                            </p>
+                                                            <p className="text-sm">{order.shippingAddress.country}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Payment Method */}
+                                                    <div className="flex items-center gap-3">
+                                                        <CreditCard className="h-5 w-5 text-primary" />
+                                                        <div>
+                                                            <p className="text-sm text-muted-foreground">Payment Method</p>
+                                                            <p className="font-medium capitalize">{order.paymentMethod}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Order Items */}
+                                                    <div>
+                                                        <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                                            <Package className="h-5 w-5 text-primary" />
+                                                            Order Items
+                                                        </h4>
+                                                        <div className="space-y-3">
+                                                            {order.items.map((item, index) => (
+                                                                <div key={index} className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                                                                    <div>
+                                                                        <p className="font-medium">{item.name}</p>
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                            Size: {item.size} | Quantity: {item.quantity}
+                                                                        </p>
+                                                                    </div>
+                                                                    <p className="font-semibold">₹{(item.price * item.quantity).toFixed(2)}</p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
                                     </CardContent>
                                 </Card>
                             ))}

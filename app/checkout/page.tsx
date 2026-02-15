@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,9 +19,20 @@ import { shippingAddressSchema, ShippingAddressFormData } from '@/validators/che
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check authentication on mount
+  useEffect(() => {
+    if (!isLoading && !user) {
+      toast.error('Please login to place order', {
+        description: 'You need to be logged in to checkout.',
+      });
+      // Redirect to login with return URL
+      router.push('/login?redirect=/checkout');
+    }
+  }, [user, isLoading, router]);
 
   const {
     register,
@@ -68,6 +79,11 @@ const Checkout = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading or redirect if not authenticated
+  if (isLoading || !user) {
+    return null;
+  }
 
   if (items.length === 0) {
     router.push('/cart');

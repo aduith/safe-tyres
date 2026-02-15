@@ -84,8 +84,17 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
+        <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground space-y-2">
           <p>© {new Date().getFullYear()} SafeTyres. All rights reserved.</p>
+          <p className="text-xs">
+            Developed by{' '}
+            <a
+              href="mailto:groraah.ad@gmail.com"
+              className="font-semibold text-primary hover:text-primary/80 transition-colors hover:underline"
+            >
+              GRORAAH
+            </a>
+          </p>
         </div>
       </div>
     </footer>

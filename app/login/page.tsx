@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { loginSchema, LoginFormData } from '@/validators/authSchemas';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,8 @@ import { toast } from 'sonner';
 
 const Login = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectUrl = searchParams.get('redirect') || '/';
     const { login, user: currentUser } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,7 +46,8 @@ const Login = () => {
                     if (payload.role === 'admin') {
                         router.push('/admin');
                     } else {
-                        router.push('/');
+                        // Redirect to intended page or home
+                        router.push(redirectUrl);
                     }
                 }
             }, 100);
