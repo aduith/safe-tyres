@@ -1,35 +1,26 @@
-'use client';
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { CartProvider } from "@/contexts/CartContext";
-import { AuthProvider } from "@/contexts/AuthContext";
+import type { Metadata } from "next";
+import { Providers } from "@/components/Providers";
 import "./globals.css";
-import { useState } from "react";
+
+export const metadata: Metadata = {
+    title: "SafeTyres | Premium Tyre Anti-Puncture Solutions",
+    description: "Advanced liquid protection for your tyres. Prevent punctures, enhance safety, and extend tyre life with SafeTyres.",
+    icons: {
+        icon: "/icon.png",
+    },
+};
 
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const [queryClient] = useState(() => new QueryClient());
-
     return (
         <html lang="en">
             <body>
-                <QueryClientProvider client={queryClient}>
-                    <TooltipProvider>
-                        <AuthProvider>
-                            <CartProvider>
-                                <Toaster />
-                                <Sonner />
-                                {children}
-                            </CartProvider>
-                        </AuthProvider>
-                    </TooltipProvider>
-                </QueryClientProvider>
+                <Providers>
+                    {children}
+                </Providers>
             </body>
         </html>
     );
