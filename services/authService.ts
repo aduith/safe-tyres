@@ -23,8 +23,10 @@ export interface AuthResponse {
     success: boolean;
     message: string;
     data: {
-        user: User;
-        token: string;
+        user?: User;
+        token?: string;
+        email?: string;
+        otpSent?: boolean;
     };
 }
 
@@ -32,7 +34,7 @@ class AuthService {
     async login(credentials: LoginCredentials): Promise<AuthResponse> {
         const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
 
-        if (response.data.success) {
+        if (response.data.success && response.data.data.token && response.data.data.user) {
             localStorage.setItem('authToken', response.data.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.data.user));
         }
@@ -43,11 +45,23 @@ class AuthService {
     async register(data: RegisterData): Promise<AuthResponse> {
         const response = await apiClient.post<AuthResponse>('/auth/register', data);
 
-        if (response.data.success) {
+        // Don't set user yet, wait for verification
+        return response.data;
+    }
+
+    async verifyOTP(email: string, otp: string): Promise<AuthResponse> {
+        const response = await apiClient.post<AuthResponse>('/auth/verify-otp', { email, otp });
+
+        if (response.data.success && response.data.data.token && response.data.data.user) {
             localStorage.setItem('authToken', response.data.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.data.user));
         }
 
+        return response.data;
+    }
+
+    async resendOTP(email: string): Promise<AuthResponse> {
+        const response = await apiClient.post<AuthResponse>('/auth/resend-otp', { email });
         return response.data;
     }
 

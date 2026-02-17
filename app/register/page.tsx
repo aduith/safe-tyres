@@ -13,12 +13,30 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from '@/components/ui/input-otp';
+import { toast } from 'sonner';
 
 const Register = () => {
     const router = useRouter();
-    const { register: registerUser } = useAuth();
+    const { register: registerUser, verifyOTP, resendOTP } = useAuth();
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [showOTPDialog, setShowOTPDialog] = useState(false);
+    const [otpValue, setOtpValue] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [isResending, setIsResending] = useState(false);
 
     const {
         register,
@@ -32,12 +50,51 @@ const Register = () => {
         try {
             setIsLoading(true);
             setError(null);
-            await registerUser(data.name, data.email, data.password);
-            router.push('/');
+            const response = await registerUser(data.name, data.email, data.password, data.phone);
+
+            if (response.otpSent) {
+                setUserEmail(data.email);
+                setShowOTPDialog(true);
+                toast.success('Verification code sent to your email!');
+            } else {
+                router.push('/');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleVerifyOTP = async () => {
+        if (otpValue.length !== 4) {
+            toast.error('Please enter a 4-digit code');
+            return;
+        }
+
+        try {
+            setIsVerifying(true);
+            await verifyOTP(userEmail, otpValue);
+            toast.success('Email verified successfully!');
+            router.push('/');
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Invalid or expired code');
+            setOtpValue('');
+        } finally {
+            setIsVerifying(false);
+        }
+    };
+
+    const handleResendOTP = async () => {
+        try {
+            setIsResending(true);
+            await resendOTP(userEmail);
+            toast.success('New verification code sent!');
+            setOtpValue('');
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Failed to resend code');
+        } finally {
+            setIsResending(false);
         }
     };
 
@@ -69,7 +126,7 @@ const Register = () => {
                                     <Input
                                         id="name"
                                         type="text"
-                                        placeholder="John Doe"
+                                        placeholder="Your Full Name"
                                         {...register('name')}
                                         className={errors.name ? 'border-destructive' : ''}
                                     />
@@ -83,7 +140,7 @@ const Register = () => {
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="you@example.com"
+                                        placeholder="email@example.com"
                                         {...register('email')}
                                         className={errors.email ? 'border-destructive' : ''}
                                     />
@@ -97,7 +154,7 @@ const Register = () => {
                                     <Input
                                         id="phone"
                                         type="tel"
-                                        placeholder="+1234567890"
+                                        placeholder="+12 34567890"
                                         {...register('phone')}
                                     />
                                 </div>
@@ -149,6 +206,52 @@ const Register = () => {
                     </Card>
                 </div>
             </main>
+
+            <Dialog open={showOTPDialog} onOpenChange={setShowOTPDialog}>
+                <DialogContent className="sm:max-w-md border-primary/20 bg-card/95 backdrop-blur-md">
+                    <DialogHeader className="space-y-3">
+                        <DialogTitle className="text-2xl font-bold text-center">Verify Your Email</DialogTitle>
+                        <DialogDescription className="text-center text-base">
+                            We've sent a 4-digit verification code to <br />
+                            <span className="font-semibold text-primary">{userEmail}</span>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center justify-center space-y-8 py-6">
+                        <InputOTP
+                            maxLength={4}
+                            value={otpValue}
+                            onChange={(value) => setOtpValue(value)}
+                        >
+                            <InputOTPGroup className="gap-4">
+                                <InputOTPSlot index={0} className="w-14 h-16 text-2xl border-2 rounded-xl focus:ring-primary h-14 w-14" />
+                                <InputOTPSlot index={1} className="w-14 h-16 text-2xl border-2 rounded-xl focus:ring-primary h-14 w-14" />
+                                <InputOTPSlot index={2} className="w-14 h-16 text-2xl border-2 rounded-xl focus:ring-primary h-14 w-14" />
+                                <InputOTPSlot index={3} className="w-14 h-16 text-2xl border-2 rounded-xl focus:ring-primary h-14 w-14" />
+                            </InputOTPGroup>
+                        </InputOTP>
+
+                        <div className="w-full space-y-4">
+                            <Button
+                                className="w-full h-12 text-lg font-semibold"
+                                onClick={handleVerifyOTP}
+                                disabled={isVerifying || otpValue.length < 4}
+                            >
+                                {isVerifying ? 'Verifying...' : 'Complete Registration'}
+                            </Button>
+
+                            <div className="text-center">
+                                <button
+                                    onClick={handleResendOTP}
+                                    disabled={isResending}
+                                    className="text-sm text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline disabled:opacity-50"
+                                >
+                                    {isResending ? 'Resending...' : "Didn't receive the code? Resend"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <Footer />
         </div>

@@ -8,7 +8,9 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (name: string, email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string, phone?: string) => Promise<{ otpSent?: boolean; email?: string }>;
+    verifyOTP: (email: string, otp: string) => Promise<void>;
+    resendOTP: (email: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -29,12 +31,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = async (email: string, password: string) => {
         const response = await authService.login({ email, password });
-        setUser(response.data.user);
+        if (response.success && response.data.user) {
+            setUser(response.data.user);
+        }
     };
 
-    const register = async (name: string, email: string, password: string) => {
-        const response = await authService.register({ name, email, password });
-        setUser(response.data.user);
+    const register = async (name: string, email: string, password: string, phone?: string) => {
+        const response = await authService.register({ name, email, password, phone });
+        return {
+            otpSent: response.data.otpSent,
+            email: response.data.email
+        };
+    };
+
+    const verifyOTP = async (email: string, otp: string) => {
+        const response = await authService.verifyOTP(email, otp);
+        if (response.success && response.data.user) {
+            setUser(response.data.user);
+        }
+    };
+
+    const resendOTP = async (email: string) => {
+        await authService.resendOTP(email);
     };
 
     const logout = () => {
@@ -50,6 +68,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 isLoading,
                 login,
                 register,
+                verifyOTP,
+                resendOTP,
                 logout,
             }}
         >

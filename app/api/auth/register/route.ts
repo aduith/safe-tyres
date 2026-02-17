@@ -19,47 +19,71 @@ export async function POST(req: NextRequest) {
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
-        if (existingUser) {
+
+        // If user exists and is already verified, prevent registration
+        if (existingUser && existingUser.isVerified) {
             return NextResponse.json(
                 { success: false, message: 'User with this email already exists' },
                 { status: 400 }
             );
         }
 
-        // Create new user
-        const user = await User.create({
-            name,
-            email,
-            password,
-            phone,
-            address,
-        });
+        // Generate 4-digit OTP
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-        // Generate token
-        const token = generateToken({
-            userId: user._id.toString(),
-            email: user.email,
-            role: user.role,
-        });
+        let user;
+        if (existingUser) {
+            // Update existing unverified user with new OTP
+            existingUser.name = name;
+            existingUser.password = password;
+            existingUser.phone = phone;
+            existingUser.address = address;
+            existingUser.otp = otp;
+            existingUser.otpExpires = otpExpires;
+            user = await existingUser.save();
+        } else {
+            // Create new user (unverified)
+            user = await User.create({
+                name,
+                email,
+                password,
+                phone,
+                address,
+                isVerified: false,
+                otp,
+                otpExpires,
+            });
+        }
+
+        // Send OTP Email
+        const { sendOTP } = await import('@/lib/email');
+        const emailResult = await sendOTP(email, otp);
+
+        if (!emailResult.success) {
+            return NextResponse.json(
+                { success: false, message: 'Error sending verification email. Please try again later.' },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json({
             success: true,
-            message: 'User registered successfully',
+            message: 'A verification code has been sent to your email.',
             data: {
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                },
-                token,
+                email: user.email,
+                otpSent: true
             },
         }, { status: 201 });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Register error:', error);
         return NextResponse.json(
-            { success: false, message: 'Error registering user', error: error instanceof Error ? error.message : 'Unknown error' },
+            {
+                success: false,
+                message: 'Error registering user',
+                error: error instanceof Error ? error.message : 'Unknown error'
+            },
             { status: 500 }
         );
     }

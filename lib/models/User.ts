@@ -14,6 +14,9 @@ export interface IUser extends Document {
         country?: string;
     };
     role: 'user' | 'admin';
+    isVerified: boolean;
+    otp?: string;
+    otpExpires?: Date;
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
@@ -56,6 +59,16 @@ const userSchema = new Schema<IUser>(
             enum: ['user', 'admin'],
             default: 'user',
         },
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
+        otp: {
+            type: String,
+        },
+        otpExpires: {
+            type: Date,
+        },
     },
     {
         timestamps: true,
@@ -78,6 +91,11 @@ userSchema.methods.comparePassword = async function (
 ): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
 };
+
+// During development, we want to ensure schema changes are reflected
+if (process.env.NODE_ENV === 'development') {
+    delete (mongoose.models as any).User;
+}
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
